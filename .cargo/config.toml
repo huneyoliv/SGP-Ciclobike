@@ -1,0 +1,16 @@
+[build]
+target = "aarch64-unknown-linux-musl"
+
+[target.aarch64-unknown-linux-musl]
+linker = "aarch64-linux-musl-gcc"
+# Garante linkagem estática total — binário self-contained como /init
+rustflags = [
+    "-C", "target-feature=+crt-static",
+    "-C", "link-arg=-static",
+    # Otimizações para Cortex-A53 (MSM8916)
+    "-C", "target-cpu=cortex-a53",
+]
+
+[target.x86_64-unknown-linux-gnu]
+# Configuração para desenvolvimento e testes no host
+rustflags = []

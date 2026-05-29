@@ -1,0 +1,14 @@
+[package]
+name = "sgp-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Tipos de domínio, erros e configuração compartilhada do SGP-Ciclobike"
+
+[dependencies]
+serde = { workspace = true }
+toml = { workspace = true }
+thiserror = { workspace = true }
+semver = { workspace = true }
+tracing = { workspace = true }

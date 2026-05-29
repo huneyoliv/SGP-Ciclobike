@@ -1,0 +1,68 @@
+[workspace]
+members = [
+    "crates/sgp-core",
+    "crates/sgp-onboarding",
+    "crates/sgp-ui",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["SGP-Ciclobike Team"]
+license = "MIT"
+
+[workspace.dependencies]
+# --- Serialização ---
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+
+# --- Runtime Async ---
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "time",
+    "fs",
+    "process",
+    "net",
+    "io-util",
+    "sync",
+] }
+
+# --- HTTP para OTA ---
+reqwest = { version = "0.12", features = ["rustls-tls", "stream"], default-features = false }
+
+# --- Erros ---
+thiserror = "2"
+anyhow = "1"
+
+# --- Logging estruturado ---
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# --- Versioning semântico (OTA) ---
+semver = { version = "1", features = ["serde"] }
+
+# --- SHA256 para validação OTA ---
+sha2 = "0.10"
+hex = "0.4"
+
+# --- Syscalls Linux (framebuffer, reboot, IIO) ---
+nix = { version = "0.29", features = ["mman", "ioctl", "fs", "signal"] }
+libc = "0.2"
+
+# --- Crates internas ---
+sgp-core = { path = "crates/sgp-core" }
+sgp-ui = { path = "crates/sgp-ui" }
+
+[profile.release]
+opt-level = "z"        # Otimiza tamanho (crítico para dispositivo embarcado)
+lto = true             # Link-Time Optimization
+codegen-units = 1      # Melhor LTO
+strip = true           # Remove símbolos de debug
+panic = "abort"        # Sem unwinding — menor binário, /init não pode fazer recovery
+
+[profile.dev]
+# Manter debug info para desenvolvimento no host
+opt-level = 0
+debug = true
