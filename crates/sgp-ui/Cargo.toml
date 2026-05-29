@@ -1,0 +1,18 @@
+[package]
+name = "sgp-ui"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Módulo de interface gráfica e controle do framebuffer para o SGP-Ciclobike"
+
+[dependencies]
+sgp-core = { workspace = true }
+embedded-graphics = { workspace = true }
+embedded-graphics-framebuf = { workspace = true }
+nix = { workspace = true }
+libc = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

@@ -51,6 +51,10 @@ hex = "0.4"
 nix = { version = "0.29", features = ["mman", "ioctl", "fs", "signal"] }
 libc = "0.2"
 
+# --- Gráficos Embarcados ---
+embedded-graphics = "0.8"
+embedded-graphics-framebuf = "0.5.0"
+
 # --- Crates internas ---
 sgp-core = { path = "crates/sgp-core" }
 sgp-ui = { path = "crates/sgp-ui" }
