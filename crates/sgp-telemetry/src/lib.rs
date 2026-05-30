@@ -23,12 +23,15 @@
     clippy::match_same_arms
 )]
 
-pub mod snapshot;
+pub mod export;
 pub mod ring_buffer;
-pub mod sync_worker;
 pub mod session;
+pub mod snapshot;
+pub mod sync_worker;
 
-pub use snapshot::TrackPoint;
+pub use export::gpx::GpxEncoder;
+pub use export::strava::{StravaClient, StravaUploadId, StravaUploadStatus};
 pub use ring_buffer::DiskRingBuffer;
-pub use sync_worker::SyncWorker;
 pub use session::{SessionManager, SessionState, SessionSummary};
+pub use snapshot::TrackPoint;
+pub use sync_worker::SyncWorker;

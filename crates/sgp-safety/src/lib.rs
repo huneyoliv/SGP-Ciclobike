@@ -23,10 +23,10 @@
     clippy::match_same_arms
 )]
 
-pub mod detector;
 pub mod alert;
+pub mod detector;
 pub mod emergency;
 
-pub use detector::{FallDetector, FallEvent, ImuSample};
 pub use alert::{AlertInput, AlertManager, AlertState};
+pub use detector::{FallDetector, FallEvent, ImuSample};
 pub use emergency::EmergencyDispatcher;

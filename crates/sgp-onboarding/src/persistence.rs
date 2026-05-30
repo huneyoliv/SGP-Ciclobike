@@ -1,8 +1,8 @@
 //! Lógica de persistência e recuperação do progresso de onboarding.
 
-use std::path::{Path, PathBuf};
-use sgp_core::{BikeConfig, ConfigError, OnboardingProgress};
 use crate::state_machine::OnboardingState;
+use sgp_core::{BikeConfig, ConfigError, OnboardingProgress};
+use std::path::{Path, PathBuf};
 
 /// Caminho oficial do arquivo de configuração persistente.
 pub const CONFIG_PATH: &str = "/etc/bike_config.toml";
@@ -38,7 +38,10 @@ impl ConfigGuard {
     }
 
     /// Atualiza o progresso usando uma função mutadora e persiste atonicamente em disco.
-    pub fn save_step(&mut self, mutate: impl FnOnce(&mut OnboardingProgress)) -> Result<(), ConfigError> {
+    pub fn save_step(
+        &mut self,
+        mutate: impl FnOnce(&mut OnboardingProgress),
+    ) -> Result<(), ConfigError> {
         mutate(&mut self.progress);
         self.dirty = true;
         self.flush_atomic()
@@ -112,7 +115,9 @@ mod tests {
         progress.language = Some(lang.clone());
         assert_eq!(
             resume_state(&progress),
-            OnboardingState::SelectCountry { language: lang.clone() }
+            OnboardingState::SelectCountry {
+                language: lang.clone()
+            }
         );
 
         let country = CountryCode {
@@ -147,16 +152,18 @@ mod tests {
     fn test_atomic_persistence() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("bike_config.toml");
-        
+
         let mut guard = ConfigGuard::load_or_default(&path);
         let lang = LanguageCode::new("pt-BR").unwrap();
-        
-        guard.save_step(|p| {
-            p.language = Some(lang);
-        }).unwrap();
+
+        guard
+            .save_step(|p| {
+                p.language = Some(lang);
+            })
+            .unwrap();
 
         assert!(path.exists());
-        
+
         let content = std::fs::read_to_string(&path).unwrap();
         assert!(content.contains("language = \"pt-BR\""));
     }

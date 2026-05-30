@@ -91,16 +91,18 @@ pub fn transition(
         (OnboardingState::SelectLanguage, OnboardingEvent::LanguageSelected(lang)) => {
             Ok(OnboardingState::SelectCountry { language: lang })
         }
-        (OnboardingState::SelectCountry { language }, OnboardingEvent::CountrySelected(country)) => {
-            Ok(OnboardingState::ConnectWifi { language, country })
-        }
-        (OnboardingState::ConnectWifi { language, country }, OnboardingEvent::WifiConnected { ssid }) => {
-            Ok(OnboardingState::CheckOtaUpdate {
-                language,
-                country,
-                wifi_ssid: ssid,
-            })
-        }
+        (
+            OnboardingState::SelectCountry { language },
+            OnboardingEvent::CountrySelected(country),
+        ) => Ok(OnboardingState::ConnectWifi { language, country }),
+        (
+            OnboardingState::ConnectWifi { language, country },
+            OnboardingEvent::WifiConnected { ssid },
+        ) => Ok(OnboardingState::CheckOtaUpdate {
+            language,
+            country,
+            wifi_ssid: ssid,
+        }),
         (OnboardingState::CheckOtaUpdate { .. }, OnboardingEvent::OtaCheckDone { .. }) => {
             Ok(OnboardingState::Complete)
         }
@@ -110,9 +112,12 @@ pub fn transition(
         (OnboardingState::ConnectWifi { language, .. }, OnboardingEvent::Back) => {
             Ok(OnboardingState::SelectCountry { language })
         }
-        (OnboardingState::CheckOtaUpdate { language, country, .. }, OnboardingEvent::Back) => {
-            Ok(OnboardingState::ConnectWifi { language, country })
-        }
+        (
+            OnboardingState::CheckOtaUpdate {
+                language, country, ..
+            },
+            OnboardingEvent::Back,
+        ) => Ok(OnboardingState::ConnectWifi { language, country }),
         (state, event) => {
             let event_name = format!("{event:?}");
             let state_name = state.name().to_string();
@@ -134,7 +139,7 @@ mod tests {
     #[test]
     fn test_valid_transitions_flow() {
         let state = OnboardingState::SelectLanguage;
-        
+
         let lang = LanguageCode::new("pt-BR").unwrap();
         let state = transition(state, OnboardingEvent::LanguageSelected(lang.clone())).unwrap();
         assert!(matches!(state, OnboardingState::SelectCountry { .. }));
@@ -147,10 +152,22 @@ mod tests {
         let state = transition(state, OnboardingEvent::CountrySelected(country.clone())).unwrap();
         assert!(matches!(state, OnboardingState::ConnectWifi { .. }));
 
-        let state = transition(state, OnboardingEvent::WifiConnected { ssid: "wifi".to_string() }).unwrap();
+        let state = transition(
+            state,
+            OnboardingEvent::WifiConnected {
+                ssid: "wifi".to_string(),
+            },
+        )
+        .unwrap();
         assert!(matches!(state, OnboardingState::CheckOtaUpdate { .. }));
 
-        let state = transition(state, OnboardingEvent::OtaCheckDone { update_applied: false }).unwrap();
+        let state = transition(
+            state,
+            OnboardingEvent::OtaCheckDone {
+                update_applied: false,
+            },
+        )
+        .unwrap();
         assert_eq!(state, OnboardingState::Complete);
     }
 
@@ -167,7 +184,9 @@ mod tests {
     #[test]
     fn test_back_transitions() {
         let lang = LanguageCode::new("pt-BR").unwrap();
-        let state = OnboardingState::SelectCountry { language: lang.clone() };
+        let state = OnboardingState::SelectCountry {
+            language: lang.clone(),
+        };
         let state = transition(state, OnboardingEvent::Back).unwrap();
         assert_eq!(state, OnboardingState::SelectLanguage);
 

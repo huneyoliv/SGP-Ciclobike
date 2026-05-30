@@ -1,3 +1,4 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
@@ -5,7 +6,6 @@ use embedded_graphics::{
     primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use crate::theme;
 
 pub struct ActionButtonWidget {
     bounds: Rectangle,
@@ -39,14 +39,10 @@ impl ActionButtonWidget {
         let text_height = 20;
 
         let center_x = self.bounds.top_left.x + (self.bounds.size.width as i32 - text_width) / 2;
-        let center_y = self.bounds.top_left.y + (self.bounds.size.height as i32 + text_height) / 2 - 4;
+        let center_y =
+            self.bounds.top_left.y + (self.bounds.size.height as i32 + text_height) / 2 - 4;
 
-        let _ = Text::new(
-            self.label,
-            Point::new(center_x, center_y),
-            text_style,
-        )
-        .draw(target);
+        let _ = Text::new(self.label, Point::new(center_x, center_y), text_style).draw(target);
 
         Ok(())
     }
@@ -70,7 +66,7 @@ mod tests {
         );
         assert!(button.contains(Point::new(15, 15)));
         assert!(!button.contains(Point::new(5, 5)));
-        
+
         let mut display = MockDisplay::<Rgb565>::new();
         display.set_allow_out_of_bounds_drawing(true);
         display.set_allow_overdraw(true);

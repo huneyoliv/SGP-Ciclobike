@@ -1,3 +1,4 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
@@ -5,7 +6,6 @@ use embedded_graphics::{
     primitives::{Circle, PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use crate::theme;
 
 pub struct StatusBarWidget {
     width: u32,
@@ -45,9 +45,7 @@ impl StatusBarWidget {
             1..=3 => theme::WARNING,
             _ => theme::SUCCESS,
         };
-        let dot_style = PrimitiveStyleBuilder::new()
-            .fill_color(gps_color)
-            .build();
+        let dot_style = PrimitiveStyleBuilder::new().fill_color(gps_color).build();
         Circle::new(Point::new(8, 12), 8).draw_styled(&dot_style, target)?;
 
         let gps_str = format!("GPS {}sat", self.satellites);
@@ -93,7 +91,7 @@ mod tests {
         display.set_allow_out_of_bounds_drawing(true);
         display.set_allow_overdraw(true);
         assert!(bar.draw(&mut display).is_ok());
-     }
+    }
 
     #[test]
     fn test_status_bar_ok() {

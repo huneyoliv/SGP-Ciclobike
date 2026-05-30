@@ -22,4 +22,7 @@ pub struct TrackPoint {
     pub cadence_rpm: f32,
     /// Força da aceleração inercial máxima registrada (em m/s²).
     pub accel_magnitude: f32,
+    /// Frequência cardíaca em BPM obtida via sensor BLE (opcional).
+    #[serde(default)]
+    pub heart_rate: Option<u8>,
 }

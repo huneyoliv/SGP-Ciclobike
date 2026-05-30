@@ -1,11 +1,11 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
     prelude::*,
-    primitives::{PrimitiveStyleBuilder, Rectangle, Triangle, StyledDrawable},
+    primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable, Triangle},
     text::Text,
 };
-use crate::theme;
 
 pub struct EmergencyAlertWidget {
     bounds: Rectangle,
@@ -20,7 +20,12 @@ impl EmergencyAlertWidget {
         }
     }
 
-    pub fn draw<D>(&self, target: &mut D, seconds_remaining: u8, flash_state: bool) -> Result<(), D::Error>
+    pub fn draw<D>(
+        &self,
+        target: &mut D,
+        seconds_remaining: u8,
+        flash_state: bool,
+    ) -> Result<(), D::Error>
     where
         D: DrawTarget<Color = Rgb565>,
     {
@@ -30,13 +35,11 @@ impl EmergencyAlertWidget {
             Rgb565::new(12, 0, 0)
         };
 
-        let bg_style = PrimitiveStyleBuilder::new()
-            .fill_color(bg_color)
-            .build();
+        let bg_style = PrimitiveStyleBuilder::new().fill_color(bg_color).build();
         self.bounds.draw_styled(&bg_style, target)?;
 
-        let triangle_top   = Point::new(270, 80);
-        let triangle_left  = Point::new(210, 180);
+        let triangle_top = Point::new(270, 80);
+        let triangle_left = Point::new(210, 180);
         let triangle_right = Point::new(330, 180);
 
         let tri_style = PrimitiveStyleBuilder::new()
@@ -64,13 +67,17 @@ impl EmergencyAlertWidget {
         button_rect.draw_styled(&button_style, target)?;
 
         let button_text_style = MonoTextStyle::new(&FONT_10X20, theme::TEXT_PRIMARY);
-        let _ = Text::new("ESTOU BEM (CANCELAR)", Point::new(165, 405), button_text_style).draw(target);
+        let _ = Text::new(
+            "ESTOU BEM (CANCELAR)",
+            Point::new(165, 405),
+            button_text_style,
+        )
+        .draw(target);
 
         Ok(())
     }
 
     pub fn check_touch(&self, touch_point: Point) -> bool {
-        touch_point.x >= 120 && touch_point.x <= 420
-            && touch_point.y >= 370 && touch_point.y <= 430
+        touch_point.x >= 120 && touch_point.x <= 420 && touch_point.y >= 370 && touch_point.y <= 430
     }
 }

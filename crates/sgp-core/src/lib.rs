@@ -19,8 +19,11 @@
 
 pub mod config;
 pub mod error;
+pub mod secrets;
+
 pub use config::{
-    BikeConfig, CountryCode, LanguageCode, OnboardingProgress, SensorId, UsbModemPath,
-    OtaChannel, OtaRelease,
+    BikeConfig, CountryCode, LanguageCode, OnboardingProgress, OtaChannel, OtaRelease, SensorId,
+    UsbModemPath,
 };
 pub use error::{ConfigError, OtaError, SgpError};
+pub use secrets::{strava_app_configured, StravaTokens, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET};

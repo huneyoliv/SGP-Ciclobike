@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::error::ConfigError;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct LanguageCode(String);
@@ -86,7 +86,7 @@ pub struct BikeConfig {
     pub onboarding: OnboardingProgress,
     pub ota_channel: OtaChannel,
     pub home_wifi_ssid: Option<String>,
-    pub strava_token: Option<String>,
+    pub strava_authorized: bool,
     pub firmware_version: Option<String>,
     pub wheel_circumference_mm: Option<u32>,
     pub rollback_marker: Option<String>,
@@ -108,7 +108,7 @@ mod tests {
     fn test_partial_toml_serialization() {
         let mut progress = OnboardingProgress::default();
         progress.language = Some(LanguageCode::new("pt-BR").unwrap());
-        
+
         let config = BikeConfig {
             onboarding: progress,
             ..Default::default()
@@ -117,7 +117,7 @@ mod tests {
         let serialized = toml::to_string(&config).unwrap();
         assert!(serialized.contains("language = \"pt-BR\""));
         assert!(serialized.contains("setup_complete = false"));
-        
+
         let deserialized: BikeConfig = toml::from_str(&serialized).unwrap();
         assert_eq!(deserialized.onboarding.language.unwrap().as_str(), "pt-BR");
         assert!(deserialized.onboarding.country.is_none());
@@ -170,7 +170,7 @@ mod tests {
         assert!(!OtaError::ChecksumMismatch {
             expected: "a".to_string(),
             got: "b".to_string()
-        }.is_transient());
+        }
+        .is_transient());
     }
 }
-

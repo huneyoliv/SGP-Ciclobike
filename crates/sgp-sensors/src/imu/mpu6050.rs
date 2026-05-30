@@ -57,15 +57,15 @@ impl SensorReader for Mpu6050Driver {
         let ax_raw = i16::from_be_bytes([data[0], data[1]]);
         let ay_raw = i16::from_be_bytes([data[2], data[3]]);
         let az_raw = i16::from_be_bytes([data[4], data[5]]);
-        
+
         let gx_raw = i16::from_be_bytes([data[8], data[9]]);
         let gy_raw = i16::from_be_bytes([data[10], data[11]]);
         let gz_raw = i16::from_be_bytes([data[12], data[13]]);
 
         // Escalas físicas padrão
         let accel_scale = 16384.0; // LSB/g
-        let gyro_scale = 131.0;   // LSB/(deg/s)
-        let g_to_mps2 = 9.80665;  // 1g = 9.80665 m/s²
+        let gyro_scale = 131.0; // LSB/(deg/s)
+        let g_to_mps2 = 9.80665; // 1g = 9.80665 m/s²
 
         Ok(SensorData::Imu {
             accel_x: (f32::from(ax_raw) / accel_scale) * g_to_mps2,

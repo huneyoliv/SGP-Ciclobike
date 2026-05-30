@@ -1,13 +1,13 @@
 //! Widget de teclado virtual QWERTY.
 
+use crate::theme;
 use embedded_graphics::{
-    prelude::*,
-    primitives::{Rectangle, PrimitiveStyleBuilder},
-    text::Text,
     mono_font::{ascii::FONT_8X13, MonoTextStyle},
     pixelcolor::Rgb565,
+    prelude::*,
+    primitives::{PrimitiveStyleBuilder, Rectangle},
+    text::Text,
 };
-use crate::theme;
 
 const ROWS: usize = 5;
 const COLS: usize = 10;
@@ -29,7 +29,9 @@ impl KeyboardWidget {
             ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
             ["a", "s", "d", "f", "g", "h", "j", "k", "l", "-"],
             ["z", "x", "c", "v", "b", "n", "m", "_", ".", "@"],
-            ["Spc", "Spc", "Spc", "Del", "Del", "Del", "Ent", "Ent", "Ent", "Ent"],
+            [
+                "Spc", "Spc", "Spc", "Del", "Del", "Del", "Ent", "Ent", "Ent", "Ent",
+            ],
         ];
         let key_width = bounds.size.width / COLS as u32;
         let key_height = bounds.size.height / ROWS as u32;
@@ -52,13 +54,13 @@ impl KeyboardWidget {
             .stroke_color(theme::TEXT_PRIMARY)
             .stroke_width(1)
             .build();
-        
+
         let text_style = MonoTextStyle::new(&FONT_8X13, theme::TEXT_PRIMARY);
 
         for row in 0..ROWS {
             for col in 0..COLS {
                 let key_label = self.keys[row][col];
-                
+
                 if row == 4 {
                     if col > 0 && self.keys[row][col] == self.keys[row][col - 1] {
                         continue;

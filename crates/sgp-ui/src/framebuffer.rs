@@ -2,9 +2,9 @@
 
 use std::fs::{File, OpenOptions};
 
-use embedded_graphics::prelude::*;
-use embedded_graphics::pixelcolor::Rgb565;
 use embedded_graphics::pixelcolor::raw::RawU16;
+use embedded_graphics::pixelcolor::Rgb565;
+use embedded_graphics::prelude::*;
 
 /// Abstração sobre o buffer de vídeo físico (/dev/fb0) ou virtual.
 pub struct FrameBuffer {
@@ -26,30 +26,28 @@ impl FrameBuffer {
         let back_buffer = vec![0u16; (width * height) as usize];
 
         match OpenOptions::new().read(true).write(true).open("/dev/fb0") {
-            Ok(file) => {
-                unsafe {
-                    let mmap_ptr = nix::sys::mman::mmap(
-                        None,
-                        std::num::NonZeroUsize::new(size).unwrap(),
-                        nix::sys::mman::ProtFlags::PROT_READ | nix::sys::mman::ProtFlags::PROT_WRITE,
-                        nix::sys::mman::MapFlags::MAP_SHARED,
-                        &file,
-                        0,
-                    );
-                    match mmap_ptr {
-                        Ok(ptr) => Self {
-                            mmap_ptr: ptr.as_ptr() as *mut u8,
-                            width,
-                            height,
-                            size,
-                            back_buffer,
-                            is_virtual: false,
-                            _fb_file: Some(file),
-                        },
-                        Err(_) => Self::new_virtual(width, height, size, back_buffer),
-                    }
+            Ok(file) => unsafe {
+                let mmap_ptr = nix::sys::mman::mmap(
+                    None,
+                    std::num::NonZeroUsize::new(size).unwrap(),
+                    nix::sys::mman::ProtFlags::PROT_READ | nix::sys::mman::ProtFlags::PROT_WRITE,
+                    nix::sys::mman::MapFlags::MAP_SHARED,
+                    &file,
+                    0,
+                );
+                match mmap_ptr {
+                    Ok(ptr) => Self {
+                        mmap_ptr: ptr.as_ptr() as *mut u8,
+                        width,
+                        height,
+                        size,
+                        back_buffer,
+                        is_virtual: false,
+                        _fb_file: Some(file),
+                    },
+                    Err(_) => Self::new_virtual(width, height, size, back_buffer),
                 }
-            }
+            },
             Err(_) => Self::new_virtual(width, height, size, back_buffer),
         }
     }
@@ -109,7 +107,11 @@ impl DrawTarget for FrameBuffer {
         I: IntoIterator<Item = Pixel<Self::Color>>,
     {
         for Pixel(coord, color) in pixels {
-            if coord.x >= 0 && coord.x < self.width as i32 && coord.y >= 0 && coord.y < self.height as i32 {
+            if coord.x >= 0
+                && coord.x < self.width as i32
+                && coord.y >= 0
+                && coord.y < self.height as i32
+            {
                 let idx = (coord.y as usize * self.width as usize) + coord.x as usize;
                 let raw_u16 = RawU16::from(color).into_inner();
                 self.back_buffer[idx] = raw_u16;

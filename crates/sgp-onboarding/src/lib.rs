@@ -23,11 +23,13 @@
     clippy::match_same_arms
 )]
 
-pub mod state_machine;
-pub mod persistence;
-pub mod network;
 pub mod input;
+pub mod network;
+pub mod persistence;
+pub mod state_machine;
 
-pub use state_machine::{OnboardingEvent, OnboardingState, TransitionError, transition};
-pub use persistence::{ConfigGuard, resume_state, CONFIG_PATH};
-pub use input::{TouchReader, TouchEvent};
+pub use input::{TouchEvent, TouchReader};
+pub use network::wifi::{connect_wifi, scan_wifi, WpaController};
+pub use network::wifi_state::{AccessPoint, WifiEvent, WifiPhase};
+pub use persistence::{resume_state, ConfigGuard, CONFIG_PATH};
+pub use state_machine::{transition, OnboardingEvent, OnboardingState, TransitionError};

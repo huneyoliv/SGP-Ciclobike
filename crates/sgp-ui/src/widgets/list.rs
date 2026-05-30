@@ -1,13 +1,13 @@
 //! Widget de lista vertical interativa.
 
+use crate::theme;
 use embedded_graphics::{
-    prelude::*,
-    primitives::{Rectangle, PrimitiveStyleBuilder},
-    text::Text,
     mono_font::{ascii::FONT_8X13, MonoTextStyle},
     pixelcolor::Rgb565,
+    prelude::*,
+    primitives::{PrimitiveStyleBuilder, Rectangle},
+    text::Text,
 };
-use crate::theme;
 
 /// Widget de lista vertical com detecção de toque e realce visual do item ativo.
 pub struct ListWidget {

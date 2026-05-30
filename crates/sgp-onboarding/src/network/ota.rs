@@ -1,10 +1,10 @@
 //! Lógica de verificação, download e aplicação de atualizações OTA.
 
+use sgp_core::error::OtaError;
+use sgp_core::{OtaChannel, OtaRelease};
 use std::path::Path;
 use std::time::Duration;
 use tokio::sync::mpsc::Sender;
-use sgp_core::{OtaChannel, OtaRelease};
-use sgp_core::error::OtaError;
 
 /// Verifica se há atualizações OTA disponíveis para o canal configurado.
 pub async fn check_ota_update(
@@ -18,7 +18,8 @@ pub async fn check_ota_update(
     if latest_version > *current_version {
         Ok(Some(OtaRelease {
             version: latest_version,
-            checksum: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e".to_string(),
+            checksum: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+                .to_string(),
             size: 4_194_304,
         }))
     } else {

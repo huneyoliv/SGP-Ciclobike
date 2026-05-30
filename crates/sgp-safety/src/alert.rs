@@ -61,7 +61,9 @@ impl AlertManager {
     /// Gerencia o countdown de 30 segundos pós-queda.
     async fn handle_incident(&mut self) {
         let mut countdown = 30u8;
-        let _ = self.state_tx.send(AlertState::Alerting { seconds_remaining: countdown });
+        let _ = self.state_tx.send(AlertState::Alerting {
+            seconds_remaining: countdown,
+        });
 
         let mut interval = tokio::time::interval(Duration::from_secs(1));
         // Ignora o primeiro trigger imediato do interval

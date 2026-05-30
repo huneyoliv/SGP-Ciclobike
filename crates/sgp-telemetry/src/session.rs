@@ -1,10 +1,10 @@
 //! Gerenciador de ciclo de pedalada ativo e exportação de relatórios estatísticos.
 
+use crate::ring_buffer::DiskRingBuffer;
+use crate::snapshot::TrackPoint;
 use std::path::Path;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
-use crate::snapshot::TrackPoint;
-use crate::ring_buffer::DiskRingBuffer;
 
 /// Sumário final gerado ao término de uma sessão de pedalada.
 #[derive(Debug, Clone, PartialEq)]
@@ -110,6 +110,7 @@ impl SessionManager {
                 speed_kmh,
                 cadence_rpm,
                 accel_magnitude,
+                heart_rate: None,
             };
 
             // Salva na RAM para cômputo rápido de estatísticas no final
@@ -165,7 +166,10 @@ impl SessionManager {
 
         self.state = SessionState::Idle;
         self.points_recorded.clear();
-        tracing::info!("Sessão encerrada com sucesso. Total percorrido: {:.2} km", summary.total_distance_km);
+        tracing::info!(
+            "Sessão encerrada com sucesso. Total percorrido: {:.2} km",
+            summary.total_distance_km
+        );
 
         Ok(summary)
     }
@@ -184,10 +188,14 @@ mod tests {
         let mut manager = SessionManager::new(&path);
         let id = manager.start_session();
 
-        manager.record_point(Some(1.0), Some(2.0), Some(10.0), 20.0, 80.0, 9.8).unwrap();
+        manager
+            .record_point(Some(1.0), Some(2.0), Some(10.0), 20.0, 80.0, 9.8)
+            .unwrap();
         // Simula passagem de tempo inserindo ponto posterior
         std::thread::sleep(Duration::from_millis(50));
-        manager.record_point(Some(1.01), Some(2.01), Some(11.0), 24.0, 85.0, 9.8).unwrap();
+        manager
+            .record_point(Some(1.01), Some(2.01), Some(11.0), 24.0, 85.0, 9.8)
+            .unwrap();
 
         let summary = manager.stop_session().unwrap();
         assert_eq!(summary.session_id, id);

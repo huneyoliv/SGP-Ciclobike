@@ -70,9 +70,10 @@ impl FallDetector {
     /// Retorna `Some(FallEvent)` apenas quando o padrão de queda + impacto é verificado.
     pub fn feed(&mut self, sample: ImuSample) -> Option<FallEvent> {
         let now = sample.timestamp;
-        
+
         // Calcula a magnitude vetorial |a| = √(ax² + ay² + az²)
-        let magnitude = (sample.accel_x.powi(2) + sample.accel_y.powi(2) + sample.accel_z.powi(2)).sqrt();
+        let magnitude =
+            (sample.accel_x.powi(2) + sample.accel_y.powi(2) + sample.accel_z.powi(2)).sqrt();
 
         match self.state {
             FallState::Idle => {

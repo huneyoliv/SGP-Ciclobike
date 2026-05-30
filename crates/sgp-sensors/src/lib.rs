@@ -22,14 +22,18 @@
     clippy::match_same_arms
 )]
 
-pub mod traits;
-pub mod imu;
-pub mod speed;
+pub mod ble;
 pub mod gps;
+pub mod imu;
 pub mod mock;
+pub mod speed;
+pub mod traits;
 
-pub use traits::{SensorData, SensorError, SensorReader};
-pub use imu::Mpu6050Driver;
-pub use speed::ReedSwitchDriver;
 pub use gps::NmeaGpsDriver;
+pub use imu::Mpu6050Driver;
 pub use mock::MockSensor;
+pub use speed::ReedSwitchDriver;
+pub use traits::{SensorData, SensorError, SensorReader};
+
+#[cfg(feature = "ble-hardware")]
+pub use ble::{cadence::CadenceDriver, heart_rate::HeartRateDriver};

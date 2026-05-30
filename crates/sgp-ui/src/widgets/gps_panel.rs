@@ -1,3 +1,4 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
@@ -5,7 +6,6 @@ use embedded_graphics::{
     primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use crate::theme;
 
 pub struct GpsPanelWidget {
     bounds: Rectangle,
@@ -42,10 +42,7 @@ impl GpsPanelWidget {
             .build();
         self.bounds.draw_styled(&card_style, target)?;
 
-        let top_bar = Rectangle::new(
-            self.bounds.top_left,
-            Size::new(self.bounds.size.width, 2),
-        );
+        let top_bar = Rectangle::new(self.bounds.top_left, Size::new(self.bounds.size.width, 2));
         let bar_style = PrimitiveStyleBuilder::new()
             .fill_color(theme::ACCENT_ALT)
             .build();
@@ -98,9 +95,7 @@ mod tests {
 
     #[test]
     fn test_gps_no_fix() {
-        let mut widget = GpsPanelWidget::new(
-            Rectangle::new(Point::new(0, 0), Size::new(200, 80)),
-        );
+        let mut widget = GpsPanelWidget::new(Rectangle::new(Point::new(0, 0), Size::new(200, 80)));
         widget.update(0.0, 0.0, 0.0, 0);
         let mut display = MockDisplay::<Rgb565>::new();
         display.set_allow_out_of_bounds_drawing(true);
@@ -110,9 +105,7 @@ mod tests {
 
     #[test]
     fn test_gps_with_fix() {
-        let mut widget = GpsPanelWidget::new(
-            Rectangle::new(Point::new(0, 0), Size::new(200, 80)),
-        );
+        let mut widget = GpsPanelWidget::new(Rectangle::new(Point::new(0, 0), Size::new(200, 80)));
         widget.update(-23.5505, -46.6333, 760.0, 8);
         let mut display = MockDisplay::<Rgb565>::new();
         display.set_allow_out_of_bounds_drawing(true);

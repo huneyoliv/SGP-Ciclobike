@@ -1,3 +1,4 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
@@ -5,7 +6,6 @@ use embedded_graphics::{
     primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use crate::theme;
 
 pub struct MetricPanelWidget {
     bounds: Rectangle,
@@ -16,7 +16,12 @@ pub struct MetricPanelWidget {
 
 impl MetricPanelWidget {
     pub fn new(bounds: Rectangle, label: &'static str, unit: &'static str) -> Self {
-        Self { bounds, label, unit, value: 0.0 }
+        Self {
+            bounds,
+            label,
+            unit,
+            value: 0.0,
+        }
     }
 
     pub fn set_value(&mut self, value: f32) {
@@ -32,10 +37,7 @@ impl MetricPanelWidget {
             .build();
         self.bounds.draw_styled(&card_style, target)?;
 
-        let top_bar = Rectangle::new(
-            self.bounds.top_left,
-            Size::new(self.bounds.size.width, 2),
-        );
+        let top_bar = Rectangle::new(self.bounds.top_left, Size::new(self.bounds.size.width, 2));
         let bar_style = PrimitiveStyleBuilder::new()
             .fill_color(theme::ACCENT_ALT)
             .build();

@@ -1,11 +1,11 @@
 //! Widget de barra de progresso horizontal.
 
-use embedded_graphics::{
-    prelude::*,
-    primitives::{Rectangle, PrimitiveStyleBuilder},
-    pixelcolor::Rgb565,
-};
 use crate::theme;
+use embedded_graphics::{
+    pixelcolor::Rgb565,
+    prelude::*,
+    primitives::{PrimitiveStyleBuilder, Rectangle},
+};
 
 /// Widget de barra de progresso horizontal para telas de download ou loading.
 pub struct ProgressWidget {

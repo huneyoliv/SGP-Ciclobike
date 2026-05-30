@@ -1,10 +1,10 @@
 //! Driver do Sensor Reed Switch via GPIO sysfs do Linux.
 
+use crate::traits::{SensorData, SensorError, SensorReader};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::time::{Duration, Instant};
-use crate::traits::{SensorData, SensorError, SensorReader};
 
 /// Driver para ler pulsos analógicos/digitais de um reed switch de roda de bicicleta.
 pub struct ReedSwitchDriver {
@@ -35,16 +35,18 @@ impl ReedSwitchDriver {
         }
 
         // Exporta o pino digitando no /sys/class/gpio/export
-        std::fs::write("/sys/class/gpio/export", self.gpio_pin.to_string())
-            .map_err(|e| SensorError::BusError(format!("Não foi possível exportar pino GPIO: {e}")))?;
+        std::fs::write("/sys/class/gpio/export", self.gpio_pin.to_string()).map_err(|e| {
+            SensorError::BusError(format!("Não foi possível exportar pino GPIO: {e}"))
+        })?;
 
         // Espera um instante para o kernel processar a criação dos arquivos
         std::thread::sleep(Duration::from_millis(50));
 
         // Define a direção do pino como entrada
         let direction_path = format!("{gpio_dir}/direction");
-        std::fs::write(direction_path, "in")
-            .map_err(|e| SensorError::BusError(format!("Não foi possível configurar direção da GPIO: {e}")))?;
+        std::fs::write(direction_path, "in").map_err(|e| {
+            SensorError::BusError(format!("Não foi possível configurar direção da GPIO: {e}"))
+        })?;
 
         Ok(())
     }
@@ -52,9 +54,9 @@ impl ReedSwitchDriver {
     /// Lê o valor lógico atual do pino (true = alto, false = baixo).
     fn read_gpio_value(&self) -> Result<bool, SensorError> {
         let value_path = format!("/sys/class/gpio/gpio{}/value", self.gpio_pin);
-        let mut file = File::open(value_path)
-            .map_err(|e| SensorError::SensorOffline(e.to_string()))?;
-        
+        let mut file =
+            File::open(value_path).map_err(|e| SensorError::SensorOffline(e.to_string()))?;
+
         let mut content = [0u8; 1];
         file.read_exact(&mut content)
             .map_err(|e| SensorError::BusError(e.to_string()))?;
@@ -73,18 +75,19 @@ impl SensorReader for ReedSwitchDriver {
         // Borda de subida detectada (mudança de falso/baixo para verdadeiro/alto)
         if current_state && !self.last_state {
             self.last_state = true;
-            
+
             if let Some(last) = self.last_pulse {
                 let duration = now.duration_since(last);
-                
+
                 // Filtra bouncing mecânico com debounce
                 if duration >= Duration::from_millis(self.debounce_ms) {
                     self.last_pulse = Some(now);
                     let sec = duration.as_secs_f32();
-                    
+
                     let rpm = 60.0 / sec;
                     // km/h = (RPM * circumference_mm * 60.0) / 1_000_000.0
-                    let speed_kmh = (rpm * (self.wheel_circumference_mm as f32) * 60.0) / 1_000_000.0;
+                    let speed_kmh =
+                        (rpm * (self.wheel_circumference_mm as f32) * 60.0) / 1_000_000.0;
 
                     return Ok(SensorData::Speed { rpm, speed_kmh });
                 }
@@ -99,7 +102,10 @@ impl SensorReader for ReedSwitchDriver {
         if let Some(last) = self.last_pulse {
             if now.duration_since(last) > Duration::from_secs(3) {
                 self.last_pulse = None;
-                return Ok(SensorData::Speed { rpm: 0.0, speed_kmh: 0.0 });
+                return Ok(SensorData::Speed {
+                    rpm: 0.0,
+                    speed_kmh: 0.0,
+                });
             }
         }
 

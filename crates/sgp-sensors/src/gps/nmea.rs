@@ -1,8 +1,8 @@
 //! Driver do Receptor GPS baseado no protocolo serial NMEA 0183.
 
+use crate::traits::{SensorData, SensorError, SensorReader};
 use std::io::{BufRead, BufReader};
 use std::time::Duration;
-use crate::traits::{SensorData, SensorError, SensorReader};
 
 /// Driver de leitura de geolocalização e telemetria espacial via receptor serial GPS.
 pub struct NmeaGpsDriver {
@@ -27,13 +27,13 @@ impl NmeaGpsDriver {
 
         let dot_idx = nmea_val.find('.')?;
         let deg_len = dot_idx.saturating_sub(2);
-        
+
         let degrees_str = &nmea_val[0..deg_len];
         let minutes_str = &nmea_val[deg_len..];
 
         let degrees = degrees_str.parse::<f64>().unwrap_or(0.0);
         let minutes = minutes_str.parse::<f64>().unwrap_or(0.0);
-        
+
         let mut decimal = degrees + (minutes / 60.0);
         if direction == "S" || direction == "W" {
             decimal = -decimal;
@@ -82,7 +82,7 @@ impl SensorReader for NmeaGpsDriver {
                     has_fix = true;
                     lat = Self::parse_degrees(fields[3], fields[4]);
                     lon = Self::parse_degrees(fields[5], fields[6]);
-                    
+
                     // Nós -> km/h (1 nó = 1.852 km/h)
                     let knots = fields[7].parse::<f32>().unwrap_or(0.0);
                     speed_kmh = knots * 1.852;

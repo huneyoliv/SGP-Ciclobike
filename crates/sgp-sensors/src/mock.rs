@@ -11,6 +11,10 @@ pub enum MockScenario {
     FallTrigger,
     /// Simula área sem sinal de satélite para o receptor GPS.
     NoGpsFix,
+    /// Simula sensor de frequencia cardiaca BLE.
+    HeartRateSensor,
+    /// Simula sensor de cadencia BLE.
+    CadenceSensor,
 }
 
 /// Gerador sintético de dados físicos de sensores.
@@ -39,9 +43,29 @@ impl MockSensor {
 }
 
 impl SensorReader for MockSensor {
+    #[allow(clippy::too_many_lines)]
     async fn read(&mut self) -> Result<SensorData, SensorError> {
         self.read_count += 1;
-        
+
+        match self.scenario {
+            MockScenario::HeartRateSensor => {
+                let bpm = 140 + (self.read_count % 41) as u8;
+                return Ok(SensorData::HeartRate {
+                    bpm,
+                    contact_detected: true,
+                });
+            }
+            MockScenario::CadenceSensor => {
+                let crank_revolutions = self.read_count as u16;
+                let last_crank_event_time = ((self.read_count * 1024) % 65536) as u16;
+                return Ok(SensorData::Cadence {
+                    crank_revolutions,
+                    last_crank_event_time,
+                });
+            }
+            _ => {}
+        }
+
         // Rotaciona as leituras de tipo de sensor (0 = IMU, 1 = Speed, 2 = GPS)
         let sensor_type = (self.read_count - 1) % 3;
 
@@ -94,17 +118,18 @@ impl SensorReader for MockSensor {
                             })
                         }
                     }
+                    _ => Err(SensorError::SensorOffline(
+                        "Cenário inválido para IMU".into(),
+                    )),
                 }
             }
             1 => {
                 // --- Simulação de Velocidade (RPM, km/h) ---
                 match self.scenario {
-                    MockScenario::NormalBiking | MockScenario::NoGpsFix => {
-                        Ok(SensorData::Speed {
-                            rpm: 160.0,
-                            speed_kmh: 20.16,
-                        })
-                    }
+                    MockScenario::NormalBiking | MockScenario::NoGpsFix => Ok(SensorData::Speed {
+                        rpm: 160.0,
+                        speed_kmh: 20.16,
+                    }),
                     MockScenario::FallTrigger => {
                         if self.read_count < 18 {
                             Ok(SensorData::Speed {
@@ -119,6 +144,9 @@ impl SensorReader for MockSensor {
                             })
                         }
                     }
+                    _ => Err(SensorError::SensorOffline(
+                        "Cenário inválido para Velocidade".into(),
+                    )),
                 }
             }
             _ => {
@@ -136,16 +164,17 @@ impl SensorReader for MockSensor {
                             satellites: 9,
                         })
                     }
-                    MockScenario::FallTrigger => {
-                        Ok(SensorData::Gps {
-                            lat: self.lat_current,
-                            lon: self.lon_current,
-                            altitude_m: 760.5,
-                            speed_kmh: 0.0,
-                            satellites: 8,
-                        })
-                    }
+                    MockScenario::FallTrigger => Ok(SensorData::Gps {
+                        lat: self.lat_current,
+                        lon: self.lon_current,
+                        altitude_m: 760.5,
+                        speed_kmh: 0.0,
+                        satellites: 8,
+                    }),
                     MockScenario::NoGpsFix => Err(SensorError::GpsNoFix),
+                    _ => Err(SensorError::SensorOffline(
+                        "Cenário inválido para GPS".into(),
+                    )),
                 }
             }
         }
@@ -167,5 +196,44 @@ mod tests {
 
         let d3 = mock.read().await.unwrap();
         assert!(matches!(d3, SensorData::Gps { .. }));
+    }
+
+    #[tokio::test]
+    async fn test_mock_ble_heart_rate_scenario() {
+        let mut mock = MockSensor::new(MockScenario::HeartRateSensor);
+        let d = mock.read().await.unwrap();
+        if let SensorData::HeartRate {
+            bpm,
+            contact_detected,
+        } = d
+        {
+            assert!(bpm >= 140 && bpm <= 180);
+            assert!(contact_detected);
+        } else {
+            panic!("Expected HeartRate");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_mock_ble_cadence_scenario() {
+        let mut mock = MockSensor::new(MockScenario::CadenceSensor);
+        let d1 = mock.read().await.unwrap();
+        let d2 = mock.read().await.unwrap();
+        if let (
+            SensorData::Cadence {
+                crank_revolutions: r1,
+                ..
+            },
+            SensorData::Cadence {
+                crank_revolutions: r2,
+                ..
+            },
+        ) = (d1, d2)
+        {
+            assert_eq!(r1, 1);
+            assert_eq!(r2, 2);
+        } else {
+            panic!("Expected Cadence");
+        }
     }
 }

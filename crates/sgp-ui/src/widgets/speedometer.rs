@@ -1,3 +1,4 @@
+use crate::theme;
 use embedded_graphics::{
     mono_font::{ascii::FONT_10X20, MonoTextStyle},
     pixelcolor::Rgb565,
@@ -5,7 +6,6 @@ use embedded_graphics::{
     primitives::{PrimitiveStyleBuilder, Rectangle, StyledDrawable},
     text::Text,
 };
-use crate::theme;
 
 pub struct SpeedometerWidget {
     bounds: Rectangle,
@@ -14,7 +14,10 @@ pub struct SpeedometerWidget {
 
 impl SpeedometerWidget {
     pub fn new(bounds: Rectangle) -> Self {
-        Self { bounds, speed_kmh: 0.0 }
+        Self {
+            bounds,
+            speed_kmh: 0.0,
+        }
     }
 
     pub fn set_speed(&mut self, kmh: f32) {
@@ -40,7 +43,11 @@ impl SpeedometerWidget {
         )
         .draw(target);
 
-        let value_color = if self.speed_kmh > 0.0 { theme::ACCENT } else { theme::TEXT_SECONDARY };
+        let value_color = if self.speed_kmh > 0.0 {
+            theme::ACCENT
+        } else {
+            theme::TEXT_SECONDARY
+        };
         let value_style = MonoTextStyle::new(&FONT_10X20, value_color);
         let speed_str = format!("{:.1}", self.speed_kmh);
         let _ = Text::new(
@@ -63,9 +70,7 @@ impl SpeedometerWidget {
         let bar_max_w = self.bounds.size.width.saturating_sub(32);
         let fill_w = ((self.speed_kmh.min(60.0) / 60.0) * bar_max_w as f32) as u32;
 
-        let track_style = PrimitiveStyleBuilder::new()
-            .fill_color(theme::BG)
-            .build();
+        let track_style = PrimitiveStyleBuilder::new().fill_color(theme::BG).build();
         Rectangle::new(Point::new(bar_x, bar_y), Size::new(bar_max_w, 8))
             .draw_styled(&track_style, target)?;
 
@@ -92,9 +97,8 @@ mod tests {
 
     #[test]
     fn test_speedometer_draw_zero() {
-        let mut widget = SpeedometerWidget::new(
-            Rectangle::new(Point::new(0, 0), Size::new(200, 100)),
-        );
+        let mut widget =
+            SpeedometerWidget::new(Rectangle::new(Point::new(0, 0), Size::new(200, 100)));
         widget.set_speed(0.0);
         let mut display = MockDisplay::<Rgb565>::new();
         display.set_allow_out_of_bounds_drawing(true);
@@ -104,9 +108,8 @@ mod tests {
 
     #[test]
     fn test_speedometer_draw_moving() {
-        let mut widget = SpeedometerWidget::new(
-            Rectangle::new(Point::new(0, 0), Size::new(200, 100)),
-        );
+        let mut widget =
+            SpeedometerWidget::new(Rectangle::new(Point::new(0, 0), Size::new(200, 100)));
         widget.set_speed(35.5);
         let mut display = MockDisplay::<Rgb565>::new();
         display.set_allow_out_of_bounds_drawing(true);

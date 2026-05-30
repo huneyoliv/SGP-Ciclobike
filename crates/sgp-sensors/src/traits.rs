@@ -40,6 +40,20 @@ pub enum SensorData {
         /// Número de satélites rastreados e em uso para o fix atual.
         satellites: u8,
     },
+    /// Dados de batimentos cardíacos por minuto.
+    HeartRate {
+        /// Batimentos por minuto.
+        bpm: u8,
+        /// Indica se há contato com a pele.
+        contact_detected: bool,
+    },
+    /// Dados de cadência acumulada de pedalada.
+    Cadence {
+        /// Rotações totais acumuladas do pedivela.
+        crank_revolutions: u16,
+        /// Tempo do ultimo evento de pedalada.
+        last_crank_event_time: u16,
+    },
 }
 
 /// Hierarquia de erros tipados que podem ocorrer durante a leitura de sensores.
@@ -57,6 +71,12 @@ pub enum SensorError {
     /// O receptor GPS está ligado mas não possui constelação suficiente para fix de sinal.
     #[error("Receptor GPS sem fix de sinal válido")]
     GpsNoFix,
+    /// O adaptador Bluetooth nao foi encontrado.
+    #[error("Adaptador Bluetooth indisponível: {0}")]
+    BluetoothUnavailable(String),
+    /// Falha na comunicação com o socket do D-Bus.
+    #[error("Conexão D-Bus perdida: {0}")]
+    DBusError(String),
 }
 
 /// Contrato assíncrono universal que todos os drivers de sensores do sistema devem implementar.

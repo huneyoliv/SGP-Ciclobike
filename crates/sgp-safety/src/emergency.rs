@@ -13,7 +13,11 @@ pub struct EmergencyDispatcher {
 
 impl EmergencyDispatcher {
     /// Cria uma nova instância configurada com caminhos de periféricos e endpoints de emergência.
-    pub fn new(modem_path: Option<&str>, emergency_number: &str, http_endpoint: Option<&str>) -> Self {
+    pub fn new(
+        modem_path: Option<&str>,
+        emergency_number: &str,
+        http_endpoint: Option<&str>,
+    ) -> Self {
         Self {
             modem_path: modem_path.map(str::to_string),
             emergency_number: emergency_number.to_string(),
@@ -54,7 +58,9 @@ impl EmergencyDispatcher {
         // Grava no log local do sistema embarcado para auditoria pós-acidente
         let log_data = format!(
             "[{:?}] EMERGENCIA CONFIRMADA: Lat={}, Lon={}. Alertas despachados.\n",
-            std::time::SystemTime::now(), lat, lon
+            std::time::SystemTime::now(),
+            lat,
+            lon
         );
         let _ = std::fs::create_dir_all("/var/log");
         let _ = std::fs::write("/var/log/sgp-emergency.log", log_data);
@@ -70,7 +76,10 @@ impl EmergencyDispatcher {
             .map_err(|e| e.to_string())?;
 
         // 1. Envia comando de discagem de voz
-        tracing::info!("Modem: Discando chamada de emergência para {}...", self.emergency_number);
+        tracing::info!(
+            "Modem: Discando chamada de emergência para {}...",
+            self.emergency_number
+        );
         let dial_cmd = format!("ATD{};\r\n", self.emergency_number);
         let _ = port.write_all(dial_cmd.as_bytes());
         std::thread::sleep(Duration::from_millis(500));
@@ -107,7 +116,8 @@ impl EmergencyDispatcher {
             "emergency_number": self.emergency_number,
         });
 
-        let res = client.post(url)
+        let res = client
+            .post(url)
             .json(&body)
             .send()
             .await

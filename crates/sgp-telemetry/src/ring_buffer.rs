@@ -1,9 +1,9 @@
 //! Buffer circular persistente em disco baseado em NDJSON e rotação atômica.
 
+use crate::snapshot::TrackPoint;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
-use crate::snapshot::TrackPoint;
 
 /// Buffer circular gravado em disco de forma seqüencial usando JSON por linha (NDJSON).
 pub struct DiskRingBuffer {
@@ -38,7 +38,7 @@ impl DiskRingBuffer {
         }
 
         let serialized = serde_json::to_string(point).map_err(|e| e.to_string())?;
-        
+
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
@@ -149,10 +149,11 @@ mod tests {
             speed_kmh: 20.0,
             cadence_rpm: 80.0,
             accel_magnitude: 9.8,
+            heart_rate: None,
         };
 
         buffer.push(&p).unwrap();
-        
+
         let batch = buffer.drain_batch(10).unwrap();
         assert_eq!(batch.len(), 1);
         assert_eq!(batch[0].session_id, id);
