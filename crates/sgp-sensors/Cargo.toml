@@ -1,0 +1,17 @@
+[package]
+name = "sgp-sensors"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+sgp-core = { workspace = true }
+embedded-hal = { workspace = true }
+linux-embedded-hal = { workspace = true }
+serialport = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }

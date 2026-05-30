@@ -1,1 +1,54 @@
-.agent
+# Build artifacts
+/target/
+**/*.rs.bk
+
+# Cargo lock (manter para binários, remover se for biblioteca)
+# Cargo.lock
+
+# Diretórios internos do agente e ferramentas
+.agent/
+.cargo/
+.libs/
+.bin/
+.rustup/
+.gemini/
+
+# Crates locais de mock (geradas por ferramentas, não devem ir ao repo)
+/crates/mocks/
+
+# Arquivos de configuração sensíveis e segredos
+*.pem
+*.key
+*.cert
+secrets.toml
+.env
+.env.*
+
+# Arquivos de telemetria e dados locais gerados em runtime
+/tmp/
+*.json.lock
+sgp_telemetry*.json
+
+# IDEs e editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs e diagnósticos
+*.log
+*.trace
+
+# Binários compilados soltos
+*.elf
+*.bin
+*.hex
+*.map
+
+# Arquivos de diagnóstico e build local extras
+cargo_err.txt
+Cross.toml
+output.txt

@@ -1,3 +1,9 @@
+//! # sgp-safety
+//!
+//! Módulo de segurança ativa contendo algoritmos de detecção de queda,
+//! janela de alerta e envio de mensagens e chamadas de emergência.
+
+#![deny(missing_docs)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(
     clippy::module_name_repetitions,
@@ -17,10 +23,10 @@
     clippy::match_same_arms
 )]
 
-pub mod config;
-pub mod error;
-pub use config::{
-    BikeConfig, CountryCode, LanguageCode, OnboardingProgress, SensorId, UsbModemPath,
-    OtaChannel, OtaRelease,
-};
-pub use error::{ConfigError, OtaError, SgpError};
+pub mod detector;
+pub mod alert;
+pub mod emergency;
+
+pub use detector::{FallDetector, FallEvent, ImuSample};
+pub use alert::{AlertInput, AlertManager, AlertState};
+pub use emergency::EmergencyDispatcher;

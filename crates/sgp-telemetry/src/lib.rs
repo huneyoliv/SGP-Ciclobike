@@ -1,3 +1,9 @@
+//! # sgp-telemetry
+//!
+//! Motor de telemetria ativa contendo gravação de trackpoints,
+//! buffer circular persistido em disco e worker de sincronização remota via MQTT/HTTPS.
+
+#![deny(missing_docs)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(
     clippy::module_name_repetitions,
@@ -17,10 +23,12 @@
     clippy::match_same_arms
 )]
 
-pub mod config;
-pub mod error;
-pub use config::{
-    BikeConfig, CountryCode, LanguageCode, OnboardingProgress, SensorId, UsbModemPath,
-    OtaChannel, OtaRelease,
-};
-pub use error::{ConfigError, OtaError, SgpError};
+pub mod snapshot;
+pub mod ring_buffer;
+pub mod sync_worker;
+pub mod session;
+
+pub use snapshot::TrackPoint;
+pub use ring_buffer::DiskRingBuffer;
+pub use sync_worker::SyncWorker;
+pub use session::{SessionManager, SessionState, SessionSummary};

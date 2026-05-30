@@ -3,6 +3,9 @@ members = [
     "crates/sgp-core",
     "crates/sgp-onboarding",
     "crates/sgp-ui",
+    "crates/sgp-sensors",
+    "crates/sgp-safety",
+    "crates/sgp-telemetry",
 ]
 resolver = "2"
 
@@ -55,9 +58,20 @@ libc = "0.2"
 embedded-graphics = "0.8"
 embedded-graphics-framebuf = "0.5.0"
 
+# --- Periféricos & Comunicação ---
+embedded-hal = "1.0"
+linux-embedded-hal = "0.4"
+serialport = "4"
+rumqttc = { version = "0.24", default-features = false, features = ["rustls-webkit"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+serde_json = "1"
+
 # --- Crates internas ---
 sgp-core = { path = "crates/sgp-core" }
 sgp-ui = { path = "crates/sgp-ui" }
+sgp-sensors = { path = "crates/sgp-sensors" }
+sgp-safety = { path = "crates/sgp-safety" }
+sgp-telemetry = { path = "crates/sgp-telemetry" }
 
 [profile.release]
 opt-level = "z"        # Otimiza tamanho (crítico para dispositivo embarcado)
@@ -70,3 +84,32 @@ panic = "abort"        # Sem unwinding — menor binário, /init não pode fazer
 # Manter debug info para desenvolvimento no host
 opt-level = 0
 debug = true
+
+[patch.crates-io]
+embedded-hal = { path = "crates/mocks/embedded-hal" }
+linux-embedded-hal = { path = "crates/mocks/linux-embedded-hal" }
+serialport = { path = "crates/mocks/serialport" }
+rumqttc = { path = "crates/mocks/rumqttc" }
+reqwest = { path = "crates/mocks/reqwest" }
+uuid = { path = "crates/mocks/uuid" }
+serde = { path = "crates/mocks/serde" }
+serde_core = { path = "crates/mocks/serde_core" }
+proc-macro2 = { path = "crates/mocks/proc-macro2" }
+quote = { path = "crates/mocks/quote" }
+libc = { path = "crates/mocks/libc" }
+thiserror = { path = "crates/mocks/thiserror" }
+num-traits = { path = "crates/mocks/num-traits" }
+az = { path = "crates/mocks/az" }
+anyhow = { path = "crates/mocks/anyhow" }
+zmij = { path = "crates/mocks/zmij" }
+serde_json = { path = "crates/mocks/serde_json" }
+nix = { path = "crates/mocks/nix" }
+getrandom = { path = "crates/mocks/getrandom" }
+rustix = { path = "crates/mocks/rustix" }
+
+
+
+
+
+
+

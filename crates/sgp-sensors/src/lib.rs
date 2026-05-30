@@ -1,3 +1,8 @@
+//! # sgp-sensors
+//!
+//! Drivers e abstrações para leitura de sensores via I2C, GPIO e Serial.
+
+#![deny(missing_docs)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(
     clippy::module_name_repetitions,
@@ -17,10 +22,14 @@
     clippy::match_same_arms
 )]
 
-pub mod config;
-pub mod error;
-pub use config::{
-    BikeConfig, CountryCode, LanguageCode, OnboardingProgress, SensorId, UsbModemPath,
-    OtaChannel, OtaRelease,
-};
-pub use error::{ConfigError, OtaError, SgpError};
+pub mod traits;
+pub mod imu;
+pub mod speed;
+pub mod gps;
+pub mod mock;
+
+pub use traits::{SensorData, SensorError, SensorReader};
+pub use imu::Mpu6050Driver;
+pub use speed::ReedSwitchDriver;
+pub use gps::NmeaGpsDriver;
+pub use mock::MockSensor;

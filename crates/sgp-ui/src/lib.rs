@@ -1,8 +1,3 @@
-//! # sgp-ui
-//!
-//! Primitivas gráficas, widgets e suporte ao framebuffer para a UI do SGP-Ciclobike.
-
-#![deny(missing_docs)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(
     clippy::module_name_repetitions,

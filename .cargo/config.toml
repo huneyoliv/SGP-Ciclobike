@@ -1,5 +1,5 @@
 [build]
-target = "aarch64-unknown-linux-musl"
+target-applies-to-host = false
 
 [target.aarch64-unknown-linux-musl]
 linker = "aarch64-linux-musl-gcc"
@@ -12,5 +12,30 @@ rustflags = [
 ]
 
 [target.x86_64-unknown-linux-gnu]
-# Configuração para desenvolvimento e testes no host
-rustflags = []
+linker = "rust-lld"
+rustflags = [
+    "-C", "link-arg=-L/home/huneyoliv/Projetos/SGP-Ciclobike/.libs",
+    "--cfg", "libc",
+    "--cfg", "linux_kernel",
+    "--cfg", "linux_like",
+]
+
+[target.x86_64-unknown-linux-musl]
+linker = "rust-lld"
+rustflags = [
+    "-C", "link-arg=-L/home/huneyoliv/Projetos/SGP-Ciclobike/.libs",
+    "-C", "target-feature=+crt-static",
+    "-C", "link-arg=-static",
+    "--cfg", "libc",
+    "--cfg", "linux_kernel",
+    "--cfg", "linux_like",
+]
+
+[host]
+linker = "rust-lld"
+rustflags = [
+    "-C", "link-arg=-L/home/huneyoliv/Projetos/SGP-Ciclobike/.libs",
+    "--cfg", "libc",
+    "--cfg", "linux_kernel",
+    "--cfg", "linux_like",
+]
