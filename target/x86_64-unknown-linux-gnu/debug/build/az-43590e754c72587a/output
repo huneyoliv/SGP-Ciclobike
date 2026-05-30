@@ -1,6 +1,0 @@
-$ mkdir -p "/target/x86_64-unknown-linux-gnu/debug/build/az-43590e754c72587a/out/try_track_caller"
-$ cd "/target/x86_64-unknown-linux-gnu/debug/build/az-43590e754c72587a/out/try_track_caller"
-$ printf '%s' "// try_tra"... > "/target/x86_64-unknown-linux-gnu/debug/build/az-43590e754c72587a/out/try_track_caller/try_track_caller.rs"
-$ cd "/target/x86_64-unknown-linux-gnu/debug/build/az-43590e754c72587a/out/try_track_caller" && "rustc" "try_track_caller.rs" "--emit=dep-info,metadata" >& /dev/null
-cargo:rustc-cfg=track_caller
-$ rm -r "/target/x86_64-unknown-linux-gnu/debug/build/az-43590e754c72587a/out/try_track_caller"
